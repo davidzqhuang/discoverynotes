@@ -4,6 +4,9 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
+import { allNotes } from "contentlayer/generated"
+import { Mdx } from "@/components/mdx-components"
+
 import { cn } from "@/lib/utils"
 
 const Note = DialogPrimitive.Root
@@ -56,6 +59,24 @@ const NoteContent = React.forwardRef<
   </NotePortal>
 ))
 NoteContent.displayName = DialogPrimitive.Content.displayName
+
+const NoteWindow = ({
+  className,
+  slug,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {slug: string}) => {
+  const note = allNotes.find((note) => note.slugAsParams === slug)
+
+  return (
+  <div
+    className={cn(
+      className
+    )}
+  >
+    <Mdx code={note.body.code} />
+  </div>
+)}
+NoteWindow.displayName = "NoteWindow"        
 
 const NoteHeader = ({
   className,
@@ -120,4 +141,5 @@ export {
   NoteFooter,
   NoteTitle,
   NoteDescription,
+  NoteWindow
 }

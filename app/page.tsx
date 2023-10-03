@@ -15,6 +15,7 @@ import {
   NoteHeader,
   NoteTitle,
   NoteTrigger,
+  NoteWindow
 } from "@/components/ui/note"
 
 import { Textarea } from "@/components/ui/textarea"
@@ -84,8 +85,7 @@ export default function Home() {
                 The current note the AI is looking at will be available here.
               </NoteDescription>
             </NoteHeader>
-            <div className="flex flex-col space-y-4 w-80vh h-80vh">
-            </div>
+            <NoteWindow slug="hello" />
           </NoteContent>
         </Note>
 

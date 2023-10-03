@@ -1,4 +1,6 @@
-// This is the app too
+'use client'
+
+import { useState } from "react"
 
 import Link from "next/link"
 
@@ -17,6 +19,9 @@ import { BiPaperPlane } from "react-icons/bi"
 
 
 export default function Home() {
+
+  const [sendHover, setSendHover] = useState(false)
+
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
       <div className="flex-grow mt-4" style={{ flex: '1' }}>
@@ -26,8 +31,7 @@ export default function Home() {
             <NoteHeader>
               <NoteTitle>Current Notes</NoteTitle>
               <NoteDescription>
-                This action cannot be undone. This will permanently delete your account
-                and remove your data from our servers.
+                The current note the AI is looking at will be available here.
               </NoteDescription>
             </NoteHeader>
             <div className="flex flex-col space-y-4 w-80vh h-80vh">
@@ -44,8 +48,13 @@ export default function Home() {
         <div className="w-4/5">
           <Textarea placeholder="Type your message here." />
         </div>
-        <div className="w-1/5">
-          <BiPaperPlane className="text-4xl" />
+        <div className="w-1/5" onMouseEnter={() => setSendHover(true)} onMouseLeave={() => setSendHover(false)}>
+          {
+            sendHover ?
+              <BiPaperPlane className="h-10 w-10 text-blue-500 hover:text-blue-600 cursor-pointer" />
+              :
+              <BiPaperPlane className="h-10 w-10 text-gray-500 hover:text-gray-600 cursor-pointer" />
+          }
         </div>
       </div>
     </div>

@@ -62,10 +62,10 @@ NoteContent.displayName = DialogPrimitive.Content.displayName
 
 const NoteWindow = ({
   className,
-  slug,
+  id,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & {slug: string}) => {
-  const note = allNotes.find((note) => note.slugAsParams === slug)
+}: React.HTMLAttributes<HTMLDivElement> & {id: string}) => {
+  const note = allNotes.find((note) => note._id === id)
 
   return (
   <div

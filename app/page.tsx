@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Message } from 'ai/react';
 import { useChat } from 'ai/react';
 import { ChatRequest, FunctionCallHandler, nanoid } from 'ai';
 
 import Link from "next/link"
+
+import { allNotes } from "contentlayer/generated"
 
 import {
   Note,
@@ -22,10 +24,29 @@ import { Textarea } from "@/components/ui/textarea"
 
 import { BiPaperPlane } from "react-icons/bi"
 
+function findNoteIds(inputText: string): string[] {
+  const pattern = /\(notes\/(.+)\.mdx\)/g;
+  const ids: string[] = [];
+
+  let match: RegExpExecArray | null;
+  while (match = pattern.exec(inputText)) {
+      const noteIdMatch = match[0].match(/notes\/(.+)\.mdx/);
+      if (noteIdMatch && noteIdMatch[1]) {
+          ids.push("notes/" + noteIdMatch[1] + ".mdx");
+      }
+  }
+  return ids;
+}
 
 export default function Home() {
 
   const [sendHover, setSendHover] = useState(false)
+
+  // Start Notes Section *******************************************************
+
+  const [currentNoteId, setCurrentNoteId] = useState("notes/index.mdx")
+
+  // End Notes Section *********************************************************
 
 
   // Chat Section **************************************************************
@@ -34,33 +55,78 @@ export default function Home() {
     chatMessages,
     functionCall,
   ) => {
-    if (functionCall.name === 'eval_code_in_browser') {
+    if (functionCall.name === 'Retrieve-Note') {
+      console.log("functionCall.arguments: ", functionCall.arguments)
       if (functionCall.arguments) {
         // Parsing here does not always work since it seems that some characters in generated code aren't escaped properly.
-        const parsedFunctionCallArguments: { code: string } = JSON.parse(
+        const parsedFunctionCallArguments: { note_id: string } = JSON.parse(
           functionCall.arguments,
         );
-        // WARNING: Do NOT do this in real-world applications!
-        eval(parsedFunctionCallArguments.code);
-        const functionResponse = {
-          messages: [
-            ...chatMessages,
-            {
-              id: nanoid(),
-              name: 'eval_code_in_browser',
-              role: 'function' as const,
-              content: parsedFunctionCallArguments.code,
-            },
-          ],
-        };
-        return functionResponse;
+
+        setCurrentNoteId(parsedFunctionCallArguments.note_id)
+
+        const note = allNotes.find((note) => note._id === parsedFunctionCallArguments.note_id)
+
+        if (!note) {
+          const functionResponse = {
+            messages: [
+              ...chatMessages,
+              {
+                id: nanoid(),
+                name: "Retrieve-Note",
+                role: 'function' as const,
+                content: 'Note not found.',
+              },
+            ],
+          };
+          return functionResponse;
+        } else {
+          const noteIds = findNoteIds(note.body.raw);
+          const functionResponse = {
+            messages: [
+              ...chatMessages,
+              {
+                id: nanoid(),
+                name: "Retrieve-Note",
+                role: 'function' as const,
+                content: note.body.raw,
+              },
+              // {
+              //   id: nanoid(),
+              //   role: 'system' as const,
+              //   content: `Available note ids: ${noteIds.join(', ')}`,
+              // }
+            ],
+          };
+          return functionResponse;
+        }
       }
     }
   };
 
+  const indexNote = allNotes.find((note) => note._id === "notes/index.mdx")
+  const indexNoteIds = findNoteIds(indexNote.body.raw);
   const { messages, input, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
     experimental_onFunctionCall: functionCallHandler,
+    initialMessages: [
+      {
+        id: nanoid(),
+        role: 'system' as const,
+        content: 'You are a helpful librarian. Your job is to quote and contextual useful material for the user. You always have available the Index and you can retrieve more notes by id. The id will be given in the notes as [note title](note id). Please only select notes with known ids which are given in another note. You should retrieve notes for an answer as much as possible. If the answer is common sense or common knowledge, state your answer and ask if they would like a reference.',
+      },
+      {
+        id: nanoid(),
+        name: "Retrieve-Note",
+        role: 'function' as const,
+        content: indexNote.body.raw,
+      },
+      {
+        id: nanoid(),
+        role: 'system' as const,
+        content: `Available note ids: ${indexNoteIds.join(', ')}`,
+      }
+    ],
   });
 
   // Generate a map of message role to text color
@@ -85,7 +151,7 @@ export default function Home() {
                 The current note the AI is looking at will be available here.
               </NoteDescription>
             </NoteHeader>
-            <NoteWindow slug="hello" />
+            <NoteWindow id={currentNoteId} />
           </NoteContent>
         </Note>
 

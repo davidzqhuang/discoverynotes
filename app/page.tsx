@@ -143,7 +143,7 @@ export default function Home() {
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
       <div className="flex-grow mt-4" style={{ flex: '1' }}>
         <Note >
-          <NoteTrigger className="bg-blue-200 hover:bg-blue-300 border hover:underline rounded-md p-2">Open Notes</NoteTrigger>
+          <NoteTrigger className="bg-blue-200 hover:bg-blue-300 border hover:underline rounded-md p-2">Open Current Note</NoteTrigger>
           <NoteContent className="w-80vh h-80vh">
             <NoteHeader>
               <NoteTitle>Current Notes</NoteTitle>
@@ -151,7 +151,7 @@ export default function Home() {
                 The current note the AI is looking at will be available here.
               </NoteDescription>
             </NoteHeader>
-            <NoteWindow id={currentNoteId} />
+            <NoteWindow className="overflow-y-auto" id={currentNoteId} />
           </NoteContent>
         </Note>
 

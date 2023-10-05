@@ -57,6 +57,11 @@ export default async function NotePage({ params }: NoteProps) {
       <div>
       <p>Number of tokens used: </p>
       <TokenProgress value={100*note.body.raw.length/(4*numTokens)} />
+      {
+        100*note.body.raw.length/(4*numTokens) > 100 ?(
+          <TokenProgress value={100*note.body.raw.length/(4*numTokens) - 100} />
+        ) : null
+      }
       </div>
       <Mdx code={note.body.code} />
     </article>

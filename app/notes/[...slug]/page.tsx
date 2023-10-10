@@ -8,7 +8,9 @@ import { TokenProgress } from "@/components/ui/tokenProgress"
 
 interface NoteProps {
   params: {
-    slug: string[]
+    slug: string[],
+    title?: string,
+    description?: string,
   }
 }
 
@@ -20,10 +22,12 @@ async function getPostFromParams(params: NoteProps["params"]) {
   if (slug.startsWith("notes/")) {
     slug = slug.slice(6)
   }
+  console.log("rendering note: ", slug)
   const note = allNotes.find((note) => note.slugAsParams === slug)
 
   if (!note) {
-    null
+    console.log("note not found")
+    return allNotes.find((note) => note.slugAsParams === "index")
   }
 
   return note
@@ -39,8 +43,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: post.title,
-    description: post.description,
+    title: post?.title,
+    description: post?.description,
   }
 }
 

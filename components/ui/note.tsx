@@ -4,7 +4,7 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
-import { allNotes } from "contentlayer/generated"
+import { allNotes, Note as NoteType } from "contentlayer/generated"
 import { Mdx } from "@/components/mdx-components"
 
 import { cn } from "@/lib/utils"
@@ -16,8 +16,9 @@ const NoteTrigger = DialogPrimitive.Trigger
 const NotePortal = ({
   className,
   ...props
-}: DialogPrimitive.DialogPortalProps) => (
-  <DialogPrimitive.Portal className={cn(className)} {...props} />
+}: DialogPrimitive.DialogPortalProps & { className?: string }) => (
+  //className={cn(className)}
+  <DialogPrimitive.Portal  {...props} />
 )
 NotePortal.displayName = DialogPrimitive.Portal.displayName
 
@@ -73,7 +74,7 @@ const NoteWindow = ({
       className
     )}
   >
-    <Mdx code={note.body.code} />
+    <Mdx code={(note as NoteType).body.code} />
   </div>
 )}
 NoteWindow.displayName = "NoteWindow"        

@@ -8,7 +8,7 @@ import { ChatRequest, FunctionCallHandler, nanoid } from 'ai';
 
 import Link from "next/link"
 
-import { allNotes } from "contentlayer/generated"
+import { Note as NoteType, allNotes } from "contentlayer/generated"
 
 import {
   Note,
@@ -106,8 +106,8 @@ export default function Home() {
     }
   };
 
-  const indexNote = allNotes.find((note) => note._id === "notes/index.mdx")
-  const indexNoteIds = findNoteIds(indexNote.body.raw);
+  const indexNote = allNotes.find((note) => note._id === "notes/index.mdx") as NoteType;
+  const indexNoteIds = findNoteIds(indexNote?.body?.raw);
   const { messages, input, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
     experimental_onFunctionCall: functionCallHandler,
@@ -122,14 +122,14 @@ export default function Home() {
         name: "Retrieve-Note",
         role: 'function' as const,
         note_id: "notes/index.mdx",
-        content: indexNote.body.raw,
+        content: indexNote.body.raw as string,
       },
       {
         id: nanoid(),
         role: 'system' as const,
         content: `Available note ids: ${indexNoteIds.join(', ')}`,
       }
-    ],
+    ] as unknown as Message[],
   });
 
   // Generate a map of message role to text color
@@ -141,8 +141,6 @@ export default function Home() {
   };
 
   // End Chat Section **********************************************************
-
-  console.log(messages)
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
@@ -177,7 +175,7 @@ export default function Home() {
 
                       m.role === "function" ? (
                         <p>
-                          {`Retrieving note with id is ${m.note_id}.`}
+                          {`Retrieving note with id is ${(m as any).note_id as string}.`}
                         </p>) : null
                     )
 

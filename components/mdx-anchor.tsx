@@ -35,9 +35,9 @@ function absolute(pathname: string, href: string) {
 export default function Anchor({
     href,
     children,
-}: React.JSX.IntrinsicElements["a"]) {
+}: any) {
     const pathname = usePathname();
     return href !== undefined ? (
-        <Link className="text-blue-500 hover:underline" href={absolute(pathname, href)}>{children}</Link>
+        <Link className="text-blue-500 hover:underline" href={absolute(pathname, href)} target="_blank" rel="noopener noreferrer">{children}</Link>
     ) : null;
 }

@@ -54,6 +54,14 @@ export const Note = defineDocumentType(() => ({
   filePathPattern: `notes/**/*.mdx`,
   contentType: "mdx",
   fields: {
+    title: {
+      type: "string",
+      required: false,
+    },
+    description: {
+      type: "string",
+      required: false,
+    },
   },
   computedFields,
 }))

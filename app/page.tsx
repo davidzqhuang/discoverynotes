@@ -10,6 +10,8 @@ import Link from "next/link"
 
 import { Note as NoteType, allNotes } from "contentlayer/generated"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
 import {
   Note,
   NoteContent,
@@ -115,7 +117,7 @@ export default function Home() {
       {
         id: nanoid(),
         role: 'system' as const,
-        content: 'You are a helpful librarian. Your job is to quote and contextual useful material for the user. You always have available the Index and you can retrieve more notes by id. The id will be given in the notes as [note title](note id). Please only select notes with known ids which are given in another note. You should retrieve notes for an answer as much as possible. If the answer is common sense or common knowledge, state your answer and ask if they would like a reference. Please keep your answers short and to the point.',
+        content: 'You are a helpful librarian. Your job is to quote and contextualize useful material for the user. You always have available the Index and you can retrieve more notes by id. The id will be given in the notes as [note title](note id). Please only select notes with known ids which are given in another note. You should retrieve notes for an answer as much as possible. If the answer is common sense or common knowledge, state your answer and ask if they would like a reference. Please keep your answers short and to the point.',
       },
       {
         id: nanoid(),
@@ -145,19 +147,35 @@ export default function Home() {
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
       <div className="flex-grow mt-4" style={{ flex: '1' }}>
-        <Note >
-          <NoteTrigger className="bg-blue-200 hover:bg-blue-300 border hover:underline rounded-md p-2">Open Current Note</NoteTrigger>
-          <NoteContent className="w-80vh h-80vh">
-            <NoteHeader>
-              <NoteTitle>Current Notes</NoteTitle>
-              <NoteDescription>
-                The current note the AI is looking at will be available here.
-              </NoteDescription>
-            </NoteHeader>
-            <NoteWindow className="overflow-y-auto" id={currentNoteId} />
-          </NoteContent>
-        </Note>
+        <div>
+          <Note >
+            <NoteTrigger className="bg-blue-200 hover:bg-blue-300 border hover:underline rounded-md p-2">Open Current Note</NoteTrigger>
+            <NoteContent className="w-80vh h-80vh">
+              <NoteHeader>
+                <NoteTitle>Current Notes</NoteTitle>
+                <NoteDescription>
+                  The current note the AI is looking at will be available here.
+                </NoteDescription>
+              </NoteHeader>
+              <NoteWindow className="overflow-y-auto" id={currentNoteId} />
+            </NoteContent>
+          </Note>
+          <Link className="ml-4" href="/notes">
+            Browse All Notes
+          </Link>
+        </div>
+        <div className="mt-4">
+          <Alert>
+            <AlertTitle>README: here's how to navigate this application</AlertTitle>
+            <AlertDescription className="text-xs">
+              <p>At the top navigation bar there are links to information about the project as a whole. <em>For more information, please go there.</em> You are currently at the application itself.</p>
+              <p>If you are not familiar with OpenAI's function-calling chat system, please ignore everything in red or blue and ask your question directly by filling out the text box at the bottom of the screen and clicking the paper airplane.</p>
+              <p>If you are familiar with it, the System messages and the Function messages are reproduced below for more interpretability of results and process. The text of the retrieved notes are hidden for readability.</p>
+              <p className="font-bold">For all users, you can view the source that the LLM is currently referencing by clicking "Open Current Note" in the top right, or view all sources by clicking "Browse All Notes".</p>
+            </AlertDescription>
+          </Alert>
 
+        </div>
       </div>
       <div className="flex-grow" style={{ flex: '3' }}>
         <div className="flex flex-col w-full mx-auto stretch">
@@ -175,7 +193,7 @@ export default function Home() {
 
                       m.role === "function" ? (
                         <p>
-                          {`Retrieving note with id is ${(m as any).note_id as string}.`}
+                          {`Retrieving note with id is ${(m as any).note_id as string}. Click "Open Current Note" at the top to see the current note that the LLM is viewing.`}
                         </p>) : null
                     )
 

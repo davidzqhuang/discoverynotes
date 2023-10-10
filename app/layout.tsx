@@ -9,6 +9,7 @@ const comfortaa = Comfortaa({ subsets: ["latin"] })
 
 export const metadata = {
   title: "DiscoveryNotes",
+  icon: "/favicon.ico",
 }
 
 interface RootLayoutProps {

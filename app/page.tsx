@@ -30,10 +30,10 @@ function findNoteIds(inputText: string): string[] {
 
   let match: RegExpExecArray | null;
   while (match = pattern.exec(inputText)) {
-      const noteIdMatch = match[0].match(/notes\/(.+)\.mdx/);
-      if (noteIdMatch && noteIdMatch[1]) {
-          ids.push("notes/" + noteIdMatch[1] + ".mdx");
-      }
+    const noteIdMatch = match[0].match(/notes\/(.+)\.mdx/);
+    if (noteIdMatch && noteIdMatch[1]) {
+      ids.push("notes/" + noteIdMatch[1] + ".mdx");
+    }
   }
   return ids;
 }
@@ -75,6 +75,7 @@ export default function Home() {
                 id: nanoid(),
                 name: "Retrieve-Note",
                 role: 'function' as const,
+                note_id: parsedFunctionCallArguments.note_id,
                 content: 'Note not found.',
               },
             ],
@@ -89,6 +90,7 @@ export default function Home() {
                 id: nanoid(),
                 name: "Retrieve-Note",
                 role: 'function' as const,
+                note_id: parsedFunctionCallArguments.note_id,
                 content: note.body.raw,
               },
               // {
@@ -119,6 +121,7 @@ export default function Home() {
         id: nanoid(),
         name: "Retrieve-Note",
         role: 'function' as const,
+        note_id: "notes/index.mdx",
         content: indexNote.body.raw,
       },
       {
@@ -138,6 +141,8 @@ export default function Home() {
   };
 
   // End Chat Section **********************************************************
+
+  console.log(messages)
 
   return (
     <div className="flex flex-col h-[calc(100vh-100px)] space-y-4">
@@ -166,7 +171,17 @@ export default function Home() {
                 style={{ color: roleToColorMap[m.role] }}
               >
                 <strong>{`${m.role}: `}</strong>
-                {m.content || JSON.stringify(m.function_call)}
+                {
+                  m.role === "system" || m.role === "user" || m.role === "assistant" ?
+                    m.content : (
+
+                      m.role === "function" ? (
+                        <p>
+                          {`Retrieving note with id is ${m.note_id}.`}
+                        </p>) : null
+                    )
+
+                }
                 <br />
                 <br />
               </div>

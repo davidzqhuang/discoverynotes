@@ -13,7 +13,13 @@ interface NoteProps {
 }
 
 async function getPostFromParams(params: NoteProps["params"]) {
-  const slug = params?.slug?.join("/")
+  let slug = params?.slug?.join("/")
+  if (slug.endsWith(".mdx")) {
+    slug = slug.slice(0, -4)
+  }
+  if (slug.startsWith("notes/")) {
+    slug = slug.slice(6)
+  }
   const note = allNotes.find((note) => note.slugAsParams === slug)
 
   if (!note) {

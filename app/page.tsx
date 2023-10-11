@@ -68,11 +68,28 @@ export default function Home() {
         setCurrentNoteId(parsedFunctionCallArguments.note_id)
 
         const note = allNotes.find((note) => note._id === parsedFunctionCallArguments.note_id)
+        
+        const newMessages: Message[] = [];
+
+        let foundNotes = 0;
+        for (let i = 0; i < chatMessages.length; i++) {
+          if (chatMessages[i].name === "Retrieve-Note") {
+            foundNotes++;
+          }
+          if (foundNotes > 1 && chatMessages[i].name === "Retrieve-Note") {
+            newMessages.push({
+              ...chatMessages[i],
+              content: chatMessages[i].content.slice(0, 50) + " ... (truncated)",
+            })
+          } else {
+            newMessages.push(chatMessages[i])
+          }
+        }
 
         if (!note) {
           const functionResponse = {
             messages: [
-              ...chatMessages,
+              ...newMessages,
               {
                 id: nanoid(),
                 name: "Retrieve-Note",
@@ -93,13 +110,13 @@ export default function Home() {
                 name: "Retrieve-Note",
                 role: 'function' as const,
                 note_id: parsedFunctionCallArguments.note_id,
-                content: note.body.raw,
+                content: note.body.raw.slice(0, 4000) 
               },
-              // {
-              //   id: nanoid(),
-              //   role: 'system' as const,
-              //   content: `Available note ids: ${noteIds.join(', ')}`,
-              // }
+              {
+                id: nanoid(),
+                role: 'system' as const,
+                content: `Available note ids: ${noteIds.join(', ')}`,
+              }
             ],
           };
           return functionResponse;

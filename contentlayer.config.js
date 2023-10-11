@@ -62,6 +62,10 @@ export const Note = defineDocumentType(() => ({
       type: "string",
       required: false,
     },
+    acknowledgements: {
+      type: "string",
+      required: false,
+    },
   },
   computedFields,
 }))
